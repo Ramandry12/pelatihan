@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Kasir {
+  ID_Kasir  Int         @id @default(autoincrement())
+  username  String      @unique
+  namaKasir String      @db.VarChar(30)
+  alamat    String      @db.VarChar(100)
+  nomorHp   String      @db.Char(15)
+  nomorKtp  String      @db.Char(15)
+  password  String
+  shifts    tbl_shift[] @relation("KasirShifts")
+}
+
+model tbl_barang {
+  ID_Barang        Int                    @id @default(autoincrement())
+  namaBarang       String                 @db.VarChar(30)
+  satuan           String                 @db.Char(20)
+  hargaSatuan      Float
+  detailPenjualans tbl_detail_penjualan[]
+}
+
+model tbl_penjualan {
+  ID_Penjualan     Int                    @id @default(autoincrement())
+  waktuTransaksi   DateTime
+  total            Float
+  ID_Shift         Int
+  shift            tbl_shift              @relation(fields: [ID_Shift], references: [ID_Shift])
+  detailPenjualans tbl_detail_penjualan[]
+}
+
+model tbl_shift {
+  ID_Shift        Int             @id @default(autoincrement())
+  ID_Kasir        Int
+  waktuBuka       DateTime
+  saldoAwal       BigInt
+  jumlahPenjualan BigInt
+  saldoAkhir      BigInt
+  waktuTutup      DateTime
+  status          String          @db.Char(5)
+  kasir           Kasir           @relation("KasirShifts", fields: [ID_Kasir], references: [ID_Kasir])
+  penjualans      tbl_penjualan[]
+}
+
+model tbl_detail_penjualan {
+  ID_Penjualan Int           @id @default(autoincrement())
+  ID_Barang    Int
+  kuantitas    Int           @db.SmallInt
+  hargaSatuan  Float
+  sub_total    Float
+  penjualan    tbl_penjualan @relation(fields: [ID_Penjualan], references: [ID_Penjualan])
+  barang       tbl_barang    @relation(fields: [ID_Barang], references: [ID_Barang])
+}
