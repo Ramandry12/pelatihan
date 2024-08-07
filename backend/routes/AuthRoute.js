@@ -8,13 +8,17 @@ const prisma = new PrismaClient();
 
 // Register user
 router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, namaKasir, alamat, nomorHp, nomorKtp, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const user = await prisma.user_andryramadhanp.create({
+    const user = await prisma.kasir.create({
       data: {
         username,
+        namaKasir,
+        alamat,
+        nomorHp,
+        nomorKtp,
         password: hashedPassword,
       },
     });
@@ -28,13 +32,13 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const user = await prisma.user_andryramadhanp.findUnique({
+  const user = await prisma.kasir.findUnique({
     where: { username },
   });
 
   if (user && (await bcrypt.compare(password, user.password))) {
     const token = jwt.sign(
-      { id: user.id, username: user.username },
+      { id: user.ID_Kasir, username: user.username },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );

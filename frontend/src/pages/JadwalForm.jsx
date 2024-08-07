@@ -3,107 +3,70 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
 const JadwalForm = () => {
-  const [kdDosen, setKdDosen] = useState("");
-  const [kdMatkul, setKdMatkul] = useState("");
-  const [waktu, setWaktu] = useState("");
-  const [ruang, setRuang] = useState("");
-  const [dosen, setDosen] = useState([]);
-  const [matkul, setMatkul] = useState([]);
+  const [namaBarang, setNamaBarang] = useState("");
+  const [satuan, setSatuan] = useState("");
+  const [hargaSatuan, setHargaSatuan] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
-    fetchDosen();
-    fetchMatkul();
     if (id) {
-      fetchJadwal();
+      fetchBarang();
     }
   }, [id]);
 
-  const fetchDosen = async () => {
-    const response = await axios.get("http://localhost:5000/dosen");
-    setDosen(response.data);
-  };
-
-  const fetchMatkul = async () => {
-    const response = await axios.get("http://localhost:5000/matkul");
-    setMatkul(response.data);
-  };
-
-  const fetchJadwal = async () => {
-    const response = await axios.get(`http://localhost:5000/jadwal/${id}`);
-    const { kd_dosen, kd_matkul, waktu, ruang } = response.data;
-    setKdDosen(kd_dosen);
-    setKdMatkul(kd_matkul);
-    setWaktu(waktu);
-    setRuang(ruang);
+  const fetchBarang = async () => {
+    const response = await axios.get(`http://localhost:5000/barang/${id}`);
+    const { namaBarang, satuan, hargaSatuan } = response.data;
+    setNamaBarang(namaBarang);
+    setSatuan(satuan);
+    setHargaSatuan(hargaSatuan);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const jadwal = { kd_dosen: kdDosen, kd_matkul: kdMatkul, waktu, ruang };
+    const barang = { namaBarang, satuan, hargaSatuan };
 
     if (id) {
-      await axios.put(`http://localhost:5000/jadwal/${id}`, jadwal);
+      await axios.put(`http://localhost:5000/barang/${id}`, barang);
     } else {
-      await axios.post("http://localhost:5000/jadwal", jadwal);
+      await axios.post("http://localhost:5000/barang", barang);
     }
 
-    navigate("/jadwal");
+    navigate("/barang");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-4">
-          {id ? "Edit Jadwal" : "Add New Jadwal"}
+          {id ? "Edit Barang" : "Add New Barang"}
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700">Dosen:</label>
-            <select
-              value={kdDosen}
-              onChange={(e) => setKdDosen(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Dosen</option>
-              {dosen.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Matkul:</label>
-            <select
-              value={kdMatkul}
-              onChange={(e) => setKdMatkul(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Matkul</option>
-              {matkul.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Waktu:</label>
+            <label className="block text-gray-700">Nama Barang:</label>
             <input
               type="text"
-              value={waktu}
-              onChange={(e) => setWaktu(e.target.value)}
+              value={namaBarang}
+              onChange={(e) => setNamaBarang(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Ruang:</label>
+            <label className="block text-gray-700">Satuan:</label>
             <input
               type="text"
-              value={ruang}
-              onChange={(e) => setRuang(e.target.value)}
+              value={satuan}
+              onChange={(e) => setSatuan(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Harga Satuan:</label>
+            <input
+              type="number"
+              value={hargaSatuan}
+              onChange={(e) => setHargaSatuan(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
