@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User_andryramadhanp {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+}
+
+model tbl_jadwal_andryramadhanp {
+  id        Int    @id @default(autoincrement())
+  kd_dosen  Int
+  kd_matkul Int
+  waktu     String
+  ruang     String
+
+  // Relation field
+  dosen                       tbl_dosen_andryramadhanp   @relation(fields: [kd_dosen], references: [kd_dosen])
+  krs                         tbl_krs_andryramadhanp[]
+  tbl_matkulId                Int?
+  tbl_matkul_andryramadhanp   tbl_matkul_andryramadhanp? @relation(fields: [tbl_matkul_andryramadhanpId], references: [kd_matkul])
+  tbl_matkul_andryramadhanpId Int?
+}
+
+model tbl_krs_andryramadhanp {
+  id          Int @id @default(autoincrement())
+  nim         Int
+  id_jadwal   Int
+  kd_semester Int
+
+  siswa    tbl_mahasiswa_andryramadhanp @relation(fields: [nim], references: [nim])
+  jadwal   tbl_jadwal_andryramadhanp    @relation(fields: [id_jadwal], references: [id])
+  semester tbl_semester_andryramadhanp  @relation(fields: [kd_semester], references: [id])
+}
+
+model tbl_mahasiswa_andryramadhanp {
+  nim     Int    @id @default(autoincrement())
+  nama    String
+  alamat  String
+  jurusan String
+
+  krs tbl_krs_andryramadhanp[]
+}
+
+model tbl_semester_andryramadhanp {
+  id       Int    @id @default(autoincrement())
+  semester String
+
+  krs tbl_krs_andryramadhanp[]
+}
+
+model tbl_dosen_andryramadhanp {
+  kd_dosen Int    @id
+  nama     String
+  alamat   String
+
+  jadwals tbl_jadwal_andryramadhanp[]
+}
+
+model tbl_matkul_andryramadhanp {
+  kd_matkul Int                         @id
+  nama      String
+  sks       String
+  matkul    tbl_jadwal_andryramadhanp[]
+}
